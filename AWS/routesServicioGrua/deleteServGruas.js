@@ -2,13 +2,14 @@ const sequelize = require("../models/index.js").sequelize;
 var initModels = require("../models/init-models");
 var models = initModels(sequelize);
 
-exports.handler = async function (event){
-    
-    const idAuto = event["pathParameters"]["id"];
-    models.autos
-    .findOne({ where: { id_auto: idAuto } })
-    .then(auto => {
-      auto.destroy();
+exports.handler = async function(event){
+    event.body = JSON.parse(event.body);
+    models.serviciogrua
+    .findOne({
+      where: { id_servicio_grua: event.body.id_servicio_grua },
+    })
+    .then(servicio => {
+      servicio.destroy();
       const response = {
         statusCode: 200,
         headers: {
@@ -16,7 +17,7 @@ exports.handler = async function (event){
         },
         body: JSON.stringify({data: true}),
       };
-    return response;
+      return response;
     })
     .catch(err => {
         const response = {
@@ -28,4 +29,5 @@ exports.handler = async function (event){
           };
         return response;
     });
+
 }

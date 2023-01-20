@@ -2,20 +2,21 @@ const sequelize = require("../models/index.js").sequelize;
 var initModels = require("../models/init-models");
 var models = initModels(sequelize);
 
-exports.handler = async function(event) {
-    models.autos
-    .findOne({ where: { propietario: req.params.id } })
-    .then(autos => {
-        console.log(autos);
+exports.handler = async function(event){
+   event.body = JSON.parse(event.body);
+  models.serviciogrua
+    .create(event.body)
+    .then(responseQuery => {
         const response = {
             statusCode: 200,
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({data: autos}),
+            body: JSON.stringify({data: true}),
           };
-          return response;})
-    .catch(err => {
+        return response;
+    })
+    .catch(err =>{
         console.error(err);
         const response = {
             statusCode: 404,
