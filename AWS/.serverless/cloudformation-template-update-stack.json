@@ -1,0 +1,2812 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "ServerlessDeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      },
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::",
+                      {
+                        "Ref": "ServerlessDeploymentBucket"
+                      }
+                    ]
+                  ]
+                }
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetLoginLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getLogin"
+      }
+    },
+    "ProyecDistDashpostLoginLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-postLogin"
+      }
+    },
+    "ProyecDistDashputLoginLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-putLogin"
+      }
+    },
+    "ProyecDistDashgetUsersLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getUsers"
+      }
+    },
+    "ProyecDistDashgetUsersAutoLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getUsersAuto"
+      }
+    },
+    "ProyecDistDashgetUbicacionLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getUbicacion"
+      }
+    },
+    "ProyecDistDashgetRolLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getRol"
+      }
+    },
+    "ProyecDistDashputUsuariosLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-putUsuarios"
+      }
+    },
+    "ProyecDistDashdeleteUsuariosLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-deleteUsuarios"
+      }
+    },
+    "ProyecDistDashputUsuarioLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-putUsuario"
+      }
+    },
+    "ProyecDistDashputRegistroLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-putRegistro"
+      }
+    },
+    "ProyecDistDashputRegistroUbicacionLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-putRegistroUbicacion"
+      }
+    },
+    "ProyecDistDashgetServGruasLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getServGruas"
+      }
+    },
+    "ProyecDistDashgetConteoGruaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-getConteoGrua"
+      }
+    },
+    "ProyecDistDashpostServGruasLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-postServGrua"
+      }
+    },
+    "ProyecDistDashputServGruasLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-putServGruas"
+      }
+    },
+    "ProyecDistDashdeleteServGruasLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/proyecDist-deleteServGruas"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "project-dist-gruas",
+                  "prod",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getLogin:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-postLogin:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putLogin:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getUsers:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getUsersAuto:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getUbicacion:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getRol:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putUsuarios:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-deleteUsuarios:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putUsuario:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putRegistro:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putRegistroUbicacion:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getServGruas:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getConteoGrua:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-postServGrua:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putServGruas:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-deleteServGruas:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getLogin:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-postLogin:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putLogin:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getUsers:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getUsersAuto:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getUbicacion:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getRol:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putUsuarios:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-deleteUsuarios:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putUsuario:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putRegistro:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putRegistroUbicacion:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getServGruas:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-getConteoGrua:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-postServGrua:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-putServGruas:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/proyecDist-deleteServGruas:*:*"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "project-dist-gruas",
+              "prod",
+              {
+                "Ref": "AWS::Region"
+              },
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetLoginLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesLogin/getLogin.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getLogin",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetLoginLogGroup"
+      ]
+    },
+    "ProyecDistDashpostLoginLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesLogin/postLogin.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-postLogin",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashpostLoginLogGroup"
+      ]
+    },
+    "ProyecDistDashputLoginLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesLogin/putLogin.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-putLogin",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashputLoginLogGroup"
+      ]
+    },
+    "ProyecDistDashgetUsersLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/getUsuarios.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getUsers",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetUsersLogGroup"
+      ]
+    },
+    "ProyecDistDashgetUsersAutoLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/getUserAuto.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getUsersAuto",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetUsersAutoLogGroup"
+      ]
+    },
+    "ProyecDistDashgetUbicacionLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/getUbicacion.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getUbicacion",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetUbicacionLogGroup"
+      ]
+    },
+    "ProyecDistDashgetRolLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/getRol.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getRol",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetRolLogGroup"
+      ]
+    },
+    "ProyecDistDashputUsuariosLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/putUsuarios.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-putUsuarios",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashputUsuariosLogGroup"
+      ]
+    },
+    "ProyecDistDashdeleteUsuariosLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/deleteUsuarios.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-deleteUsuarios",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashdeleteUsuariosLogGroup"
+      ]
+    },
+    "ProyecDistDashputUsuarioLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/putUsuario.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-putUsuario",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashputUsuarioLogGroup"
+      ]
+    },
+    "ProyecDistDashputRegistroLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/putRegistro.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-putRegistro",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashputRegistroLogGroup"
+      ]
+    },
+    "ProyecDistDashputRegistroUbicacionLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesUsuarios/putRegUbicacion.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-putRegistroUbicacion",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashputRegistroUbicacionLogGroup"
+      ]
+    },
+    "ProyecDistDashgetServGruasLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesServicioGrua/getServGruas.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getServGruas",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetServGruasLogGroup"
+      ]
+    },
+    "ProyecDistDashgetConteoGruaLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesServicioGrua/getConteo.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-getConteoGrua",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashgetConteoGruaLogGroup"
+      ]
+    },
+    "ProyecDistDashpostServGruasLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesServicioGrua/postServGrua.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-postServGrua",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashpostServGruasLogGroup"
+      ]
+    },
+    "ProyecDistDashputServGruasLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesServicioGrua/putServGruas.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-putServGruas",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashputServGruasLogGroup"
+      ]
+    },
+    "ProyecDistDashdeleteServGruasLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/project-dist-gruas/prod/1674230957539-2023-01-20T16:09:17.539Z/project-dist-gruas.zip"
+        },
+        "Handler": "./routesServicioGrua/deleteServGruas.handler",
+        "Runtime": "nodejs16.x",
+        "FunctionName": "proyecDist-deleteServGruas",
+        "MemorySize": 1024,
+        "Timeout": 120,
+        "Environment": {
+          "Variables": {
+            "DBUSERNAME": "admin",
+            "DBPASSWORD": "admin1234",
+            "DBHOST": "taller-mecanico.c6zavnwtuyg7.us-east-1.rds.amazonaws.com",
+            "DBNAME": "taller-mecanico",
+            "DBPORT": "3306"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ProyecDistDashdeleteServGruasLogGroup"
+      ]
+    },
+    "ProyecDistDashgetLoginLambdaVersionfS2sLDlMKSarCQeZ5MmrZ7vBYJkvjURSjotP8RITCo": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetLoginLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashpostLoginLambdaVersionFqGtXebO7YezSkD9U4nAc0A97gOLSDZG6txMKEGbAo4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashpostLoginLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashputLoginLambdaVersion9HVNlicamOEDCp8QZv94RbKTOX8WoJdi4BVqnfFTDI": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashputLoginLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashgetUsersLambdaVersionihuGobCAF1v4LrTvr3JVchXuzmy8njHYIegdFILTxIQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetUsersLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashgetUsersAutoLambdaVersionUNgGLkrQu7Xxmm22Ut41nHvUvOwvoAfiGCexS2vZjo": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetUsersAutoLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashgetUbicacionLambdaVersionGKt2v1PeLL6wA0IRfAXE43ZuFGv7Qh2QvxV4ZjNg4": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetUbicacionLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashgetRolLambdaVersionUxaiwAbgqNoA1sBHugh4AIh77DQWXDViTbvUhcfw": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetRolLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashputUsuariosLambdaVersioni2SO3tjWEwg6dHKmfaDT1Qpsm7L15WgPFersBfbD7Q": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashputUsuariosLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashdeleteUsuariosLambdaVersionxFEhmQ2jJpeEdbiqsnTrs3p6eooidS4nM14aQHj8U": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashdeleteUsuariosLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashputUsuarioLambdaVersionBvFSJ0HB0prQiqrC5SE1GlsLckjekbZgtnqZuM0yDA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashputUsuarioLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashputRegistroLambdaVersionzHJHnpIcejRYRPErprQhwhXTtfN7QBC99uDmMlk": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashputRegistroLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashputRegistroUbicacionLambdaVersionHs4JiPp2AM6XDWR4iMCnYdicn5GO9mRpjSWKMMQKEk": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashputRegistroUbicacionLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashgetServGruasLambdaVersionDjQuPu7NyNSPkWiP9ze4w55GQDaiSLJA6fgkoiHZZI": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetServGruasLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashgetConteoGruaLambdaVersionvjmY3cMMoKYcYyU63K7pAavJVFzU3m25wIk9iUnmOI": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashgetConteoGruaLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashpostServGruasLambdaVersionxwYq3oY7XpuMrLlHjXSQbYmjsu7cXfTs9HQPi9eNA": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashpostServGruasLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashputServGruasLambdaVersiongXUKWMcSyPV905lfea4TxfhDTP5iSrzjMYDlYZWHE": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashputServGruasLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ProyecDistDashdeleteServGruasLambdaVersion15dBq1nnUF3MgprjQmy7TLC5nEVl28d7yXW4JbCw73o": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ProyecDistDashdeleteServGruasLambdaFunction"
+        },
+        "CodeSha256": "nO2iovPPipDiqrrQkgc+PCFo66eMD+uaGzX1invBftU="
+      }
+    },
+    "ApiGatewayRestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "prod-project-dist-gruas",
+        "EndpointConfiguration": {
+          "Types": [
+            "EDGE"
+          ]
+        },
+        "Policy": ""
+      }
+    },
+    "ApiGatewayResourceLogin": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "login",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUsuarios": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "usuarios",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUsuariosAuto": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "PathPart": "auto",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUsuariosUbicacion": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "PathPart": "ubicacion",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUsuariosRegistro": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "PathPart": "registro",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUsuariosRegistrarubicacion": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "PathPart": "registrarUbicacion",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceUsuariosDashrol": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "usuarios-rol",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceServgrua": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "ApiGatewayRestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "serv_grua",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceServgruaConteo": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceServgrua"
+        },
+        "PathPart": "conteo",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodLoginGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLogin"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetLoginLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetLoginLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodLoginPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLogin"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashpostLoginLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashpostLoginLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodLoginPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceLogin"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashputLoginLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashputLoginLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetUsersLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetUsersLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosAutoGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuariosAuto"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetUsersAutoLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetUsersAutoLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosUbicacionGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuariosUbicacion"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetUbicacionLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetUbicacionLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosDashrolGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuariosDashrol"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetRolLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetRolLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashputUsuarioLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashputUsuarioLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosDelete": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "DELETE",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuarios"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashdeleteUsuariosLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashdeleteUsuariosLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosRegistroPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuariosRegistro"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashputRegistroLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashputRegistroLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodUsuariosRegistrarubicacionPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsuariosRegistrarubicacion"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashputRegistroUbicacionLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashputRegistroUbicacionLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodServgruaGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceServgrua"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetServGruasLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetServGruasLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodServgruaConteoGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceServgruaConteo"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashgetConteoGruaLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashgetConteoGruaLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodServgruaPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceServgrua"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashpostServGruasLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashpostServGruasLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodServgruaPut": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceServgrua"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashputServGruasLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashputServGruasLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayMethodServgruaDelete": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "DELETE",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceServgrua"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ProyecDistDashdeleteServGruasLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": []
+      },
+      "DependsOn": [
+        "ProyecDistDashdeleteServGruasLambdaPermissionApiGateway"
+      ]
+    },
+    "ApiGatewayDeployment1674230946579": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "StageName": "prod"
+      },
+      "DependsOn": [
+        "ApiGatewayMethodLoginGet",
+        "ApiGatewayMethodLoginPost",
+        "ApiGatewayMethodLoginPut",
+        "ApiGatewayMethodUsuariosGet",
+        "ApiGatewayMethodUsuariosAutoGet",
+        "ApiGatewayMethodUsuariosUbicacionGet",
+        "ApiGatewayMethodUsuariosDashrolGet",
+        "ApiGatewayMethodUsuariosPut",
+        "ApiGatewayMethodUsuariosDelete",
+        "ApiGatewayMethodUsuariosPut",
+        "ApiGatewayMethodUsuariosRegistroPut",
+        "ApiGatewayMethodUsuariosRegistrarubicacionPut",
+        "ApiGatewayMethodServgruaGet",
+        "ApiGatewayMethodServgruaConteoGet",
+        "ApiGatewayMethodServgruaPost",
+        "ApiGatewayMethodServgruaPut",
+        "ApiGatewayMethodServgruaDelete"
+      ]
+    },
+    "ProyecDistDashgetLoginLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetLoginLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashpostLoginLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashpostLoginLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashputLoginLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashputLoginLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetUsersLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetUsersLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetUsersAutoLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetUsersAutoLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetUbicacionLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetUbicacionLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetRolLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetRolLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashputUsuariosLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashputUsuariosLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashdeleteUsuariosLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashdeleteUsuariosLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashputUsuarioLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashputUsuarioLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashputRegistroLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashputRegistroLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashputRegistroUbicacionLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashputRegistroUbicacionLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetServGruasLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetServGruasLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashgetConteoGruaLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashgetConteoGruaLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashpostServGruasLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashpostServGruasLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashputServGruasLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashputServGruasLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ProyecDistDashdeleteServGruasLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ProyecDistDashdeleteServGruasLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ServerlessDeploymentBucketName"
+      }
+    },
+    "ProyecDistDashgetLoginLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetLoginLambdaVersionfS2sLDlMKSarCQeZ5MmrZ7vBYJkvjURSjotP8RITCo"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetLoginLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashpostLoginLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashpostLoginLambdaVersionFqGtXebO7YezSkD9U4nAc0A97gOLSDZG6txMKEGbAo4"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashpostLoginLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashputLoginLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashputLoginLambdaVersion9HVNlicamOEDCp8QZv94RbKTOX8WoJdi4BVqnfFTDI"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashputLoginLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashgetUsersLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetUsersLambdaVersionihuGobCAF1v4LrTvr3JVchXuzmy8njHYIegdFILTxIQ"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetUsersLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashgetUsersAutoLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetUsersAutoLambdaVersionUNgGLkrQu7Xxmm22Ut41nHvUvOwvoAfiGCexS2vZjo"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetUsersAutoLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashgetUbicacionLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetUbicacionLambdaVersionGKt2v1PeLL6wA0IRfAXE43ZuFGv7Qh2QvxV4ZjNg4"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetUbicacionLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashgetRolLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetRolLambdaVersionUxaiwAbgqNoA1sBHugh4AIh77DQWXDViTbvUhcfw"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetRolLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashputUsuariosLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashputUsuariosLambdaVersioni2SO3tjWEwg6dHKmfaDT1Qpsm7L15WgPFersBfbD7Q"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashputUsuariosLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashdeleteUsuariosLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashdeleteUsuariosLambdaVersionxFEhmQ2jJpeEdbiqsnTrs3p6eooidS4nM14aQHj8U"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashdeleteUsuariosLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashputUsuarioLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashputUsuarioLambdaVersionBvFSJ0HB0prQiqrC5SE1GlsLckjekbZgtnqZuM0yDA"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashputUsuarioLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashputRegistroLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashputRegistroLambdaVersionzHJHnpIcejRYRPErprQhwhXTtfN7QBC99uDmMlk"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashputRegistroLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashputRegistroUbicacionLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashputRegistroUbicacionLambdaVersionHs4JiPp2AM6XDWR4iMCnYdicn5GO9mRpjSWKMMQKEk"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashputRegistroUbicacionLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashgetServGruasLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetServGruasLambdaVersionDjQuPu7NyNSPkWiP9ze4w55GQDaiSLJA6fgkoiHZZI"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetServGruasLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashgetConteoGruaLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashgetConteoGruaLambdaVersionvjmY3cMMoKYcYyU63K7pAavJVFzU3m25wIk9iUnmOI"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashgetConteoGruaLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashpostServGruasLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashpostServGruasLambdaVersionxwYq3oY7XpuMrLlHjXSQbYmjsu7cXfTs9HQPi9eNA"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashpostServGruasLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashputServGruasLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashputServGruasLambdaVersiongXUKWMcSyPV905lfea4TxfhDTP5iSrzjMYDlYZWHE"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashputServGruasLambdaFunctionQualifiedArn"
+      }
+    },
+    "ProyecDistDashdeleteServGruasLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ProyecDistDashdeleteServGruasLambdaVersion15dBq1nnUF3MgprjQmy7TLC5nEVl28d7yXW4JbCw73o"
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ProyecDistDashdeleteServGruasLambdaFunctionQualifiedArn"
+      }
+    },
+    "ServiceEndpoint": {
+      "Description": "URL of the service endpoint",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "ApiGatewayRestApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/prod"
+          ]
+        ]
+      },
+      "Export": {
+        "Name": "sls-project-dist-gruas-prod-ServiceEndpoint"
+      }
+    }
+  }
+}

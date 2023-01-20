@@ -1,0 +1,169 @@
+service: project-dist-gruas
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: prod
+  region: us-east-1
+  environment:
+    DBUSERNAME: ${env:DBUSERNAME}
+    DBPASSWORD: ${env:DBPASSWORD}
+    DBHOST: ${env:DBHOST}
+    DBNAME: ${env:DBNAME}
+    DBPORT: ${env:DBPORT}
+
+
+functions:
+  proyecDist-getLogin:
+    handler: ./routesLogin/getLogin.handler
+    name: proyecDist-getLogin
+    timeout: 120
+    events:
+      - http: 
+          path: /login
+          method: GET
+
+  proyecDist-postLogin:
+    handler: ./routesLogin/postLogin.handler
+    name: proyecDist-postLogin
+    timeout: 120
+    events:
+      - http: 
+          path: /login
+          method: POST
+
+  proyecDist-putLogin:
+    handler: ./routesLogin/putLogin.handler
+    name: proyecDist-putLogin
+    timeout: 120
+    events:
+      - http: 
+          path: /login
+          method: PUT
+
+  proyecDist-getUsers:
+    handler: ./routesUsuarios/getUsuarios.handler
+    name: proyecDist-getUsers
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios
+          method: GET
+  
+  proyecDist-getUsersAuto:
+    handler: ./routesUsuarios/getUserAuto.handler
+    name: proyecDist-getUsersAuto
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios/auto/
+          method: GET
+
+  proyecDist-getUbicacion:
+    handler: ./routesUsuarios/getUbicacion.handler
+    name: proyecDist-getUbicacion
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios/ubicacion/
+          method: GET
+
+  proyecDist-getRol:
+    handler: ./routesUsuarios/getRol.handler
+    name: proyecDist-getRol
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios-rol
+          method: GET
+  
+  proyecDist-putUsuarios:
+    handler: ./routesUsuarios/putUsuarios.handler
+    name: proyecDist-putUsuarios
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios
+          method: PUT
+
+  proyecDist-deleteUsuarios:
+    handler: ./routesUsuarios/deleteUsuarios.handler
+    name: proyecDist-deleteUsuarios
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios
+          method: DELETE
+  
+  proyecDist-putUsuario:
+    handler: ./routesUsuarios/putUsuario.handler
+    name: proyecDist-putUsuario
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios
+          method: PUT
+
+  proyecDist-putRegistro:
+    handler: ./routesUsuarios/putRegistro.handler
+    name: proyecDist-putRegistro
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios/registro
+          method: PUT
+
+  proyecDist-putRegistroUbicacion:
+    handler: ./routesUsuarios/putRegUbicacion.handler
+    name: proyecDist-putRegistroUbicacion
+    timeout: 120
+    events:
+      - http: 
+          path: /usuarios/registrarUbicacion
+          method: PUT
+
+  proyecDist-getServGruas:
+    handler: ./routesServicioGrua/getServGruas.handler
+    name: proyecDist-getServGruas
+    timeout: 120
+    events:
+      - http: 
+          path: /serv_grua
+          method: GET
+  
+  proyecDist-getConteoGrua:
+    handler: ./routesServicioGrua/getConteo.handler
+    name: proyecDist-getConteoGrua
+    timeout: 120
+    events:
+      - http: 
+          path: /serv_grua/conteo
+          method: GET
+  
+  proyecDist-postServGruas:
+    handler: ./routesServicioGrua/postServGrua.handler
+    name: proyecDist-postServGrua
+    timeout: 120
+    events:
+      - http: 
+          path: /serv_grua
+          method: POST
+
+  proyecDist-putServGruas:
+    handler: ./routesServicioGrua/putServGruas.handler
+    name: proyecDist-putServGruas
+    timeout: 120
+    events:
+      - http: 
+          path: /serv_grua
+          method: PUT
+  
+  proyecDist-deleteServGruas:
+    handler: ./routesServicioGrua/deleteServGruas.handler
+    name: proyecDist-deleteServGruas
+    timeout: 120
+    events:
+      - http: 
+          path: /serv_grua
+          method: DELETE
